@@ -196,10 +196,15 @@ function H.refresh_token(async, force)
   end
 end
 
+---@class AvanteCopilotModel
+---@field id
+---@field name
+
 ---@private
 ---@class AvanteCopilotState
 ---@field oauth_token string
 ---@field github_token CopilotToken?
+---@field models AvanteCopilotModel[]?
 M.state = nil
 
 M.api_key_name = ""
@@ -294,6 +299,7 @@ end
 
 
 function M.get_models()
+  if M.state.models then return M.state.models end
   H.refresh_token(false, false)
   local models_url = "https://api.githubcopilot.com/models"
   local response = curl.get(models_url, {
@@ -309,8 +315,8 @@ function M.get_models()
     error("Failed to get Copilot models: " .. vim.inspect(response))
   end
 
-  local models = vim.json.decode(response.body).data -- id, name, ...
-  return models
+  M.state.models = vim.json.decode(response.body).data
+  return M.state.models
 end
 
 
