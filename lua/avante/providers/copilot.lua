@@ -292,6 +292,29 @@ function M.setup_file_watcher()
   )
 end
 
+
+function M.get_models()
+  H.refresh_token(false, false)
+  local models_url = "https://api.githubcopilot.com/models"
+  local response = curl.get(models_url, {
+    headers = {
+      ["Accept"] = "application/json",
+      ["Authorization"] = "Bearer " .. M.state.github_token.token,
+      ["Copilot-Integration-Id"] = "vscode-chat",
+    },
+    timeout = 5000,
+  })
+
+  if response.status ~= 200 then
+    error("Failed to get Copilot models: " .. vim.inspect(response))
+  end
+
+  local models = vim.json.decode(response.body).data -- id, name, ...
+  return models
+end
+
+
+
 function M.setup()
   local copilot_token_file = Path:new(copilot_path)
 
