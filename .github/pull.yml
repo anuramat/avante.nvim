@@ -1,0 +1,8 @@
+version: "1"
+rules:
+  - base: main
+    upstream: yetone:main
+    mergeMethod: hardreset
+  - base: dev
+    upstream: main
+    mergeMethod: merge
